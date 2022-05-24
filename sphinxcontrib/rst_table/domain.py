@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 class TableIndex(Index):
     """A custom index that creates an table matrix."""
 
-    name = 'table'
+    name = 'tbl'
     localname = 'Table Index'
     shortname = 'Table'
 
@@ -41,22 +41,25 @@ class TblDomain(Domain):
     name = 'tbl'
     label = 'TBL  Sample'
     roles = {
-        'table': XRefRole(),
+        'tbl': XRefRole(),
         'row': XRefRole()
     }
+    
     directives = {
-        'table': TableDirective,
+        'tbl': TableDirective,
         'row': RowDirective,
         'column': ColumnDirective,
     }
+    
     indices = {
         TableIndex
     }
+    
     initial_data = {
         'tables': [],  # object list
         'rows': [],  # object list
     }
-
+    
     def get_full_qualified_name(self, node):
         return '{}.{}'.format('table', node.arguments[0])
 

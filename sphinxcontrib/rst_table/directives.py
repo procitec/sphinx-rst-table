@@ -40,15 +40,14 @@ class TableDirective(ObjectDescription):
         'headers': directives.unchanged,
         'widths': directives.unchanged,
         'title': directives.unchanged,
+        'columns': directives.unchanged,
     }
 
     def run(self):
-        raise RuntimeError("This is called")
-        
         node_table = nodes.table(classes=["tbl"])
         caption = None
         headers = []
-        columns = None    
+        columns = None
         widths = []
         
         if 0 < len(self.arguments):
@@ -62,49 +61,54 @@ class TableDirective(ObjectDescription):
             
         if "headers" in self.options and 0 < len(self.options['headers']):
             headers = self.options["headers"].split(", ")
-            logger.info(f"found {columns} entries in header")
+            logger.info(f"found {len(headers)} entries in header")
             columns = len(headers)
         if "widths" in self.options and 0 < len(self.options['widths']):
             widths = self.options["widths"].split(", ")
             logger.info(f"found {len(widths)} entries in widths")
             columns = len(widths)
         if "columns" in self.options:
-            columns = self.options['columns']
+            columns = int(self.options['columns'])
+
+        columns += 1 # todo enumeration configurable
 
         if columns is None:
             raise RuntimeError(f"columns could be determined from options 'headers', 'widths' or 'columns', but none seems given")
         else:
             logger.info(f"create table with {columns} columns")
 
-        node_tgroup = nodes.tgroup(cols=columns)
 
-        node_table += node_tgroup
         _module.row_id=0
         _module.table_id += 1
-        
 
-        # todo match headers and widths length to match together
+        node_tgroup = nodes.tgroup(cols=columns)
+        node_table += node_tgroup
         
+        # todo match headers and widths length to match together
         if 0 < len(widths):
             for width in widths:
-                node_colspec = nodes.colspec(colwidth=width)
+                logger.info(f"create colspec with {width} column")
+                node_colspec = nodes.colspec(colwidth=int(width))
+                node_tgroup += node_colspec
+        else:
+            for i in range(0, columns):
+                logger.info(f"create colspec with {int(100/columns)} column")
+                node_colspec = nodes.colspec(colwidth=int(100/columns))
                 node_tgroup += node_colspec
 
-        
-        header_row = nodes.row()
-
         if 0 < len(headers):
+            header_row = nodes.row()
             for header in headers:
                 header_row += nodes.entry("", nodes.paragraph(text=header))
         
-        node_thead = nodes.thead("",header_row)
+            node_thead = nodes.thead("",header_row)
 
         node_tbody = nodes.tbody()
-        self.state.nested_parse(self.content, 1, node_tbody)
+        self.state.nested_parse(self.content,  self.content_offset, node_tbody)
         node_tgroup += node_tbody
 
-#        if 0 < len(headers):
-        node_tgroup += node_thead
+        if 0 < len(headers):
+            node_tgroup += node_thead
 
         tbl = self.env.get_domain('tbl')
         #logger.info(f"self content {self.get_signatures()}")
@@ -146,7 +150,7 @@ class RowDirective(ObjectDescription):
         node += node_id
         content_row += node
 
-        self.state.nested_parse(self.content, 1, content_row)
+        self.state.nested_parse(self.content, self.content_offset, content_row)
 
         tbl = self.env.get_domain('tbl')
         tbl.add_row(self.options['id'])
@@ -161,8 +165,8 @@ class ColumnDirective(ObjectDescription):
     #    'contains': directives.unchanged_required,
     #}
     def run(self):
-        raise RuntimeError("This is called")
+        logger.info(f"adding column with content {self.content}")
         self.assert_has_content()
         node = nodes.entry(classes=["tbl", "tbl-content"])
-        self.state.nested_parse(self.content, 1, node)
+        self.state.nested_parse(self.content,  self.content_offset, node)
         return [node]

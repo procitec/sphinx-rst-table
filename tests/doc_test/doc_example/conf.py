@@ -1,6 +1,6 @@
 import os
 
-extensions = ["sphinxcontrib_rst_table"]
+extensions = ["sphinxcontrib.rst_table"]
 
 
 test_dir = os.path.dirname(__file__)

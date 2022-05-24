@@ -1,20 +1,17 @@
 Example for a simple table
 ==========================
 
-
-.. image:: afadsf
-
-.. tbl:table:: This is a simple Table
+.. tbl:tbl:: This is a simple Table
     :columns: 2
 
-    .. tbl:row::
+    .. tbl:row:: adfad
         :id: ROW_1
         
-        .. tbl:column::
+        .. tbl:column:: adsfafds
                
             This is a colum with *italic* content
         
-        .. tbl:column::
+        .. tbl:column:: asdfaf
 
             | This is a
             | multiline column
