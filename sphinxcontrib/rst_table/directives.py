@@ -87,7 +87,7 @@ class TableDirective(ObjectDescription):
         # todo match headers and widths length to match together
         if 0 < len(widths):
             for width in widths:
-                logger.info(f"create colspec with {width} column")
+                logger.info(f"create colspec with {int(width)} column")
                 node_colspec = nodes.colspec(colwidth=int(width))
                 node_tgroup += node_colspec
         else:
@@ -111,7 +111,6 @@ class TableDirective(ObjectDescription):
             node_tgroup += node_thead
 
         tbl = self.env.get_domain('tbl')
-        #logger.info(f"self content {self.get_signatures()}")
         tbl.add_table(caption)
         return [node_table]
 
@@ -143,9 +142,9 @@ class RowDirective(ObjectDescription):
     }
 
     def run(self):
-        content_row = nodes.row(classes=["tbl", "tbl-content"])
+        content_row = nodes.row(classes=["tbl", "content"])
         _module.row_id += 1
-        node = nodes.entry(classes=["tbl", "tbl-content"])
+        node = nodes.entry(classes=["tbl", "content"])
         node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
         node += node_id
         content_row += node
@@ -167,6 +166,6 @@ class ColumnDirective(ObjectDescription):
     def run(self):
         logger.info(f"adding column with content {self.content}")
         self.assert_has_content()
-        node = nodes.entry(classes=["tbl", "tbl-content"])
+        node = nodes.entry(classes=["tbl", "content"])
         self.state.nested_parse(self.content,  self.content_offset, node)
         return [node]
