@@ -40,6 +40,7 @@ class TableDirective(ObjectDescription):
         "widths": directives.unchanged,
         "title": directives.unchanged,
         "columns": directives.unchanged,
+        "class": directives.unchanged,
     }
 
     def run(self):
@@ -146,15 +147,22 @@ class RowDirective(ObjectDescription):
     required_arguments = 0
     option_spec = {
         "id": directives.unchanged,
+        "class": directives.unchanged,
     }
 
     def run(self):
         env = self.env
-        content_row = nodes.row(classes=["tbl", "content"])
+        classes = ["tbl-row"]
+
+        # todo add odd/even to clases
+        if "class" in self.options:
+            classes.append(self.options["classes"])
+
+        content_row = nodes.row(classes=classes)
         _module.row_id += 1
 
         if env.config.rst_table_autonumber:
-            node = nodes.entry(classes=["tbl", "content"])
+            node = nodes.entry(classes=classes)
             node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
             node += node_id
             if "id" in self.options:
@@ -173,12 +181,18 @@ class ColumnDirective(ObjectDescription):
 
     has_content = True
     required_arguments = 0
-    # option_spec = {
-    #    'contains': directives.unchanged_required,
-    # }
+    option_spec = {
+        "class": directives.unchanged,
+    }
+
     def run(self):
+        classes = ["tbl-col"]
+        # todo add odd/even to clases
+        if "class" in self.options:
+            classes.append(self.options["classes"])
+
         logger.info(f"adding column with content {self.content}")
         self.assert_has_content()
-        node = nodes.entry(classes=["tbl", "content"])
+        node = nodes.entry(classes=classes)
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]

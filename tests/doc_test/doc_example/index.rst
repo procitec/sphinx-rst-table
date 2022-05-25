@@ -1,6 +1,8 @@
 Example for a simple table
 ==========================
 
+.. From here shared with README.rst 
+
 .. tbl:tbl:: First simple table
     :columns: 2
 

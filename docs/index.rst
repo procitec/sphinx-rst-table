@@ -9,6 +9,7 @@
 
    directives
    configuration
+   roles
    changelog
 
 Indices and tables
