@@ -45,6 +45,8 @@ class TableDirective(ObjectDescription):
     }
 
     def run(self):
+        env = self.env
+        
         node_table = nodes.table(classes=["tbl"])
         caption = None
         headers = []
@@ -76,11 +78,14 @@ class TableDirective(ObjectDescription):
             columns = int(self.options['columns'])
         elif "headers" not in self.options and "widths" not in self.options:
             raise ExtensionError("could not determine number of columns from header or widths options. 'columns' options must be given")
-
-        columns += 1 # todo enumeration configurable
+        
+        if env.config.rst_table_autonumber:
+            columns += 1
 
         logger.info(f"create table with {columns} columns")
 
+        if env.config.rst_table_autonumber_reset_on_table:
+            _module.table_id=0
 
         _module.row_id=0
         _module.table_id += 1
@@ -144,15 +149,17 @@ class RowDirective(ObjectDescription):
     }
 
     def run(self):
+        env = self.env
         content_row = nodes.row(classes=["tbl", "content"])
         _module.row_id += 1
         node = nodes.entry(classes=["tbl", "content"])
         
-        if "id" in self.options:
+        if env.config.rst_table_autonumber:
             node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
             node += node_id
-            tbl = self.env.get_domain('tbl')
-            tbl.add_row(self.options['id'])
+            if "id" in self.options:
+                tbl = self.env.get_domain('tbl')
+                tbl.add_row(self.options['id'])
 
         content_row += node
 

@@ -22,3 +22,7 @@ def test_doc_example(test_app):
     assert(
         "First simple table" not in html
     )
+
+    assert(
+        "1.1" in html #from autonumber config value
+    )
