@@ -28,7 +28,6 @@ def test_app(make_app, sphinx_test_tempdir, request):
     if external_data_dir is not None:
         copy_srcdir_to_tmpdir(external_data_dir, sphinx_test_tempdir)
 
-
     # return sphinx.testing fixture make_app and new srcdir which in sphinx_test_tempdir
     app = make_app(
         buildername=builder_params.get("buildername", "html"),
@@ -48,4 +47,4 @@ def test_app(make_app, sphinx_test_tempdir, request):
     finally:
         pass
         # cleanup test temporary directory
-        #shutil.rmtree(sphinx_test_tempdir, True)
+        # shutil.rmtree(sphinx_test_tempdir, True)

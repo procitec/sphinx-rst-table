@@ -1,19 +1,25 @@
 from collections import defaultdict
 
-from sphinxcontrib.rst_table.directives import TableDirective, RowDirective, ColumnDirective
 from sphinx.domains import Domain, Index
 from sphinx.roles import XRefRole
-from sphinx.util.nodes import make_refnode
 from sphinx.util import logging
+from sphinx.util.nodes import make_refnode
+
+from sphinxcontrib.rst_table.directives import (
+    ColumnDirective,
+    RowDirective,
+    TableDirective,
+)
+
 logger = logging.getLogger(__name__)
 
 
 class TableIndex(Index):
     """A custom index that creates an table matrix."""
 
-    name = 'tbl'
-    localname = 'Table Index'
-    shortname = 'Table'
+    name = "tbl"
+    localname = "Table Index"
+    shortname = "Table"
 
     def generate(self, docnames=None):
         content = defaultdict(list)
@@ -27,8 +33,7 @@ class TableIndex(Index):
         #
         # name, subtype, docname, anchor, extra, qualifier, description
         for _name, dispname, typ, docname, anchor, _priority in tables:
-            content[dispname[0].lower()].append(
-                (dispname, 0, docname, anchor, docname, '', typ))
+            content[dispname[0].lower()].append((dispname, 0, docname, anchor, docname, "", typ))
 
         # convert the dict to the sorted list of tuples expected
         content = sorted(content.items())
@@ -38,67 +43,56 @@ class TableIndex(Index):
 
 class TblDomain(Domain):
 
-    name = 'tbl'
-    label = 'TBL  Sample'
-    roles = {
-        'tbl': XRefRole(),
-        'row': XRefRole()
-    }
-    
+    name = "tbl"
+    label = "TBL  Sample"
+    roles = {"tbl": XRefRole(), "row": XRefRole()}
+
     directives = {
-        'tbl': TableDirective,
-        'row': RowDirective,
-        'col': ColumnDirective,
+        "tbl": TableDirective,
+        "row": RowDirective,
+        "col": ColumnDirective,
     }
-    
-    indices = {
-        TableIndex
-    }
-    
+
+    indices = {TableIndex}
+
     initial_data = {
-        'tables': [],  # object list
-        'rows': [],  # object list
+        "tables": [],  # object list
+        "rows": [],  # object list
     }
-    
+
     def get_full_qualified_name(self, node):
-        return '{}.{}'.format('table', node.arguments[0])
+        return "{}.{}".format("table", node.arguments[0])
 
     def get_objects(self):
-        for obj in self.data['tables']:
-            yield(obj)
+        for obj in self.data["tables"]:
+            yield (obj)
 
-    def resolve_xref(self, env, fromdocname, builder, typ, target, node,
-                     contnode):
-        match = [(docname, anchor)
-                 for name, sig, typ, docname, anchor, prio
-                 in self.get_objects() if sig == target]
+    def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
+        match = [(docname, anchor) for name, sig, typ, docname, anchor, prio in self.get_objects() if sig == target]
 
         if len(match) > 0:
             todocname = match[0][0]
             targ = match[0][1]
 
-            return make_refnode(builder, fromdocname, todocname, targ,
-                                contnode, targ)
+            return make_refnode(builder, fromdocname, todocname, targ, contnode, targ)
         else:
-            logger.warning(f"Could not resolve xref for {target}" )
+            logger.warning(f"Could not resolve xref for {target}")
             return None
 
     def add_table(self, signature, id):
         """Add a new table to the domain."""
         index_entry = signature if signature is not None else id
-        
-        name = '{}.{}'.format('table', index_entry)
-        anchor = 'table-{}'.format(index_entry)
+
+        name = "{}.{}".format("table", index_entry)
+        anchor = "table-{}".format(index_entry)
 
         # name, dispname, type, docname, anchor, priority
-        self.data['tables'].append(
-            (name, index_entry, 'Table', self.env.docname, anchor, 0))
+        self.data["tables"].append((name, index_entry, "Table", self.env.docname, anchor, 0))
 
     def add_row(self, index_entry):
         """Add a new row to the domain."""
-        name = '{}.{}'.format('row', index_entry)
-        anchor = 'row-{}'.format(index_entry)
+        name = "{}.{}".format("row", index_entry)
+        anchor = "row-{}".format(index_entry)
 
         # name, dispname, type, docname, anchor, priority
-        self.data['rows'].append(
-            (name, index_entry, 'Row', self.env.docname, anchor, 0))
+        self.data["rows"].append((name, index_entry, "Row", self.env.docname, anchor, 0))
