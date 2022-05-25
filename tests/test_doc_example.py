@@ -16,6 +16,9 @@ def test_doc_example(test_app):
     )
     
     assert(
-        'This is a simple Table' in html
+        'multiline column' in html
     )
 
+    assert(
+        "First simple table" not in html
+    )

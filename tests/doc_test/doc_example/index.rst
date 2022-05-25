@@ -1,19 +1,16 @@
 Example for a simple table
 ==========================
 
-.. tbl:tbl:: This is a simple Table
+.. tbl:tbl:: First simple table
     :columns: 2
-    :title:
-    :id: TABLE_1
 
     .. tbl:row::
-        :id: ROW_1
         
-        .. tbl:column::
+        .. tbl:col::
                
             This is a colum with *italic* content
         
-        .. tbl:column::
+        .. tbl:col::
 
             | This is a
             | multiline column

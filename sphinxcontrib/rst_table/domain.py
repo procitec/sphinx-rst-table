@@ -48,7 +48,7 @@ class TblDomain(Domain):
     directives = {
         'tbl': TableDirective,
         'row': RowDirective,
-        'column': ColumnDirective,
+        'col': ColumnDirective,
     }
     
     indices = {
@@ -83,20 +83,22 @@ class TblDomain(Domain):
             logger.warning(f"Could not resolve xref for {target}" )
             return None
 
-    def add_table(self, signature):
+    def add_table(self, signature, id):
         """Add a new table to the domain."""
-        name = '{}.{}'.format('table', signature)
-        anchor = 'table-{}'.format(signature)
+        index_entry = signature if signature is not None else id
+        
+        name = '{}.{}'.format('table', index_entry)
+        anchor = 'table-{}'.format(index_entry)
 
         # name, dispname, type, docname, anchor, priority
         self.data['tables'].append(
-            (name, signature, 'Table', self.env.docname, anchor, 0))
+            (name, index_entry, 'Table', self.env.docname, anchor, 0))
 
-    def add_row(self, signature):
+    def add_row(self, index_entry):
         """Add a new row to the domain."""
-        name = '{}.{}'.format('row', signature)
-        anchor = 'row-{}'.format(signature)
+        name = '{}.{}'.format('row', index_entry)
+        anchor = 'row-{}'.format(index_entry)
 
         # name, dispname, type, docname, anchor, priority
         self.data['rows'].append(
-            (name, signature, 'Row', self.env.docname, anchor, 0))
+            (name, index_entry, 'Row', self.env.docname, anchor, 0))

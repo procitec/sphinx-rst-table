@@ -36,7 +36,7 @@ class TableDirective(ObjectDescription):
     has_content = True
     required_arguments = 1
     option_spec = {
-        'id': directives.unchanged_required,
+        'id': directives.unchanged,
         'headers': directives.unchanged,
         'widths': directives.unchanged,
         'title': directives.unchanged,
@@ -49,6 +49,7 @@ class TableDirective(ObjectDescription):
         headers = []
         columns = None
         widths = []
+        table_id = None
         
         if 0 < len(self.arguments):
             caption = self.arguments[0]
@@ -56,8 +57,8 @@ class TableDirective(ObjectDescription):
             if 'title' in self.options:
                 node_caption = nodes.title(text=caption)
                 node_table += node_caption
-        else:
-            caption = self.options['id']
+        if "id" in self.options:
+            table_id = self.options['id']
             
         if "headers" in self.options and 0 < len(self.options['headers']):
             headers = self.options["headers"].split(", ")
@@ -110,12 +111,10 @@ class TableDirective(ObjectDescription):
         if 0 < len(headers):
             node_tgroup += node_thead
 
-        tbl = self.env.get_domain('tbl')
-        tbl.add_table(caption)
+        if caption is not None or table_id is not None:
+            tbl = self.env.get_domain('tbl')
+            tbl.add_table(caption, table_id)
         return [node_table]
-
-
-
 
 
 class RowDirective(ObjectDescription):
@@ -138,21 +137,24 @@ class RowDirective(ObjectDescription):
     has_content = True
     required_arguments = 0
     option_spec = {
-        'id': directives.unchanged_required,
+        'id': directives.unchanged,
     }
 
     def run(self):
         content_row = nodes.row(classes=["tbl", "content"])
         _module.row_id += 1
         node = nodes.entry(classes=["tbl", "content"])
-        node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
-        node += node_id
+        
+        if "id" in self.options:
+            node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
+            node += node_id
+            tbl = self.env.get_domain('tbl')
+            tbl.add_row(self.options['id'])
+
         content_row += node
 
         self.state.nested_parse(self.content, self.content_offset, content_row)
 
-        tbl = self.env.get_domain('tbl')
-        tbl.add_row(self.options['id'])
         return [content_row]
 
 class ColumnDirective(ObjectDescription):
