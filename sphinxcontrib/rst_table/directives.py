@@ -152,16 +152,16 @@ class RowDirective(ObjectDescription):
         env = self.env
         content_row = nodes.row(classes=["tbl", "content"])
         _module.row_id += 1
-        node = nodes.entry(classes=["tbl", "content"])
         
         if env.config.rst_table_autonumber:
+            node = nodes.entry(classes=["tbl", "content"])
             node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
             node += node_id
             if "id" in self.options:
                 tbl = self.env.get_domain('tbl')
                 tbl.add_row(self.options['id'])
 
-        content_row += node
+            content_row += node
 
         self.state.nested_parse(self.content, self.content_offset, content_row)
 
