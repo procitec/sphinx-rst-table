@@ -3,6 +3,7 @@ from docutils.parsers.rst import nodes
 
 from sphinx import addnodes
 from sphinx.directives import ObjectDescription
+from sphinx.errors import ExtensionError
 from docutils.parsers.rst import Directive
 
 from sphinx.util import logging
@@ -59,6 +60,9 @@ class TableDirective(ObjectDescription):
                 node_table += node_caption
         if "id" in self.options:
             table_id = self.options['id']
+            if 0 == len(self.arguments()):
+                node_caption = nodes.title()
+                node_table += node_caption
             
         if "headers" in self.options and 0 < len(self.options['headers']):
             headers = self.options["headers"].split(", ")
@@ -70,13 +74,12 @@ class TableDirective(ObjectDescription):
             columns = len(widths)
         if "columns" in self.options:
             columns = int(self.options['columns'])
+        elif "headers" not in self.options and "widths" not in self.options:
+            raise ExtensionError("could not determine number of columns from header or widths options. 'columns' options must be given")
 
         columns += 1 # todo enumeration configurable
 
-        if columns is None:
-            raise RuntimeError(f"columns could be determined from options 'headers', 'widths' or 'columns', but none seems given")
-        else:
-            logger.info(f"create table with {columns} columns")
+        logger.info(f"create table with {columns} columns")
 
 
         _module.row_id=0
