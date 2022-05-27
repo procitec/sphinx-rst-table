@@ -7,6 +7,7 @@ from sphinx.util import logging
 logger = logging.getLogger(__name__)
 
 import sys
+import re
 
 _module = sys.modules[__name__]
 _module.tables = {}
@@ -45,8 +46,12 @@ class TableDirective(ObjectDescription):
 
     def run(self):
         env = self.env
+        classes = ["tbl"]
 
-        node_table = nodes.table(classes=["tbl"])
+        if "class" in self.options:
+            classes.append(self.options["classes"])
+
+        node_table = nodes.table(classes=classes)
         caption = None
         headers = []
         columns = None
@@ -55,7 +60,7 @@ class TableDirective(ObjectDescription):
 
         if 0 < len(self.arguments):
             caption = self.arguments[0]
-            logger.info(f"got caption {caption}")
+            logger.debug(f"got caption {caption}")
             if "title" in self.options:
                 node_caption = nodes.title(text=caption)
                 node_table += node_caption
@@ -66,24 +71,23 @@ class TableDirective(ObjectDescription):
                 node_table += node_caption
 
         if "headers" in self.options and 0 < len(self.options["headers"]):
-            headers = self.options["headers"].split(", ")
-            logger.info(f"found {len(headers)} entries in header")
+            headers = re.split(",\s{0,1}", self.options["headers"] )
+            logger.debug(f"found {len(headers)} entries in header")
             columns = len(headers)
         if "widths" in self.options and 0 < len(self.options["widths"]):
-            widths = self.options["widths"].split(", ")
-            logger.info(f"found {len(widths)} entries in widths")
+            widths = re.split(",\s{0,1}", self.options["widths"] )
+            logger.debug(f"found {len(widths)} entries in widths")
             columns = len(widths)
         if "columns" in self.options:
             columns = int(self.options["columns"])
+            if env.config.rst_table_autonumber:
+                columns += 1
         elif "headers" not in self.options and "widths" not in self.options:
             raise ExtensionError(
                 "could not determine number of columns from header or widths options. 'columns' options must be given"
             )
 
-        if env.config.rst_table_autonumber:
-            columns += 1
-
-        logger.info(f"create table with {columns} columns")
+        logger.debug(f"create table with {columns} columns")
 
         if env.config.rst_table_autonumber_reset_on_table:
             _module.table_id = 0
@@ -97,12 +101,12 @@ class TableDirective(ObjectDescription):
         # todo match headers and widths length to match together
         if 0 < len(widths):
             for width in widths:
-                logger.info(f"create colspec with {int(width)} column")
+                logger.debug(f"create colspec with {int(width)} column")
                 node_colspec = nodes.colspec(colwidth=int(width))
                 node_tgroup += node_colspec
         else:
             for i in range(0, columns):
-                logger.info(f"create colspec with {int(100/columns)} column")
+                logger.debug(f"create colspec with {int(100/columns)} column")
                 node_colspec = nodes.colspec(colwidth=int(100 / columns))
                 node_tgroup += node_colspec
 
@@ -191,7 +195,7 @@ class ColumnDirective(ObjectDescription):
         if "class" in self.options:
             classes.append(self.options["classes"])
 
-        logger.info(f"adding column with content {self.content}")
+        logger.debug(f"adding column with content {self.content}")
         self.assert_has_content()
         node = nodes.entry(classes=classes)
         self.state.nested_parse(self.content, self.content_offset, node)

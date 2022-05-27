@@ -13,15 +13,19 @@ import re
 
 
 @pytest.mark.parametrize(
-    "test_app", [{"buildername": "html", "srcdir": "doc_test/doc_no_title", "warning": out}], indirect=True
+    "test_app", [{"buildername": "html", "srcdir": "doc_test/doc_columns_headers", "warnings": out}], indirect=True
 )
-def test_no_title(test_app):
+def test_columns_header(test_app):
     app = test_app
     app.build()
     html = Path(app.outdir, "index.html").read_text()
 
     assert "Example for a simple table" in html
 
-    assert  re.search('index.rst:4: (ERROR|WARNING): Error in "tbl:tbl" directive:', out.getvalue()) is not None
+    assert( "Auto ID") in html
 
-    assert "multiline column" not in html
+    assert( "First Column") in html
+
+    assert( "Second Column") in html
+
+    assert "multiline column" in html
