@@ -36,7 +36,6 @@ class TableDirective(ObjectDescription):
     has_content = True
     required_arguments = 1
     option_spec = {
-        "id": directives.unchanged,
         "headers": directives.unchanged,
         "widths": directives.unchanged,
         "title": directives.unchanged,
@@ -51,24 +50,24 @@ class TableDirective(ObjectDescription):
         if "class" in self.options:
             classes.append(self.options["classes"])
 
-        node_table = nodes.table(classes=classes)
-        caption = None
         headers = []
-        columns = None
         widths = []
+        columns = None
         table_id = None
+        caption = self.arguments[0]
 
-        if 0 < len(self.arguments):
-            caption = self.arguments[0]
-            logger.debug(f"got caption {caption}")
-            if "title" in self.options:
-                node_caption = nodes.title(text=caption)
-                node_table += node_caption
+        logger.debug(f"got caption {caption}")
+        ids = [f"table-{caption}"]
+
         if "id" in self.options:
             table_id = self.options["id"]
-            if 0 == len(self.arguments()):
-                node_caption = nodes.title()
-                node_table += node_caption
+            ids.append(f"table-{table_id}")
+
+        node_table = nodes.table(classes=classes, ids=ids)
+
+        if "title" in self.options:
+            node_caption = nodes.title(text=caption)
+            node_table += node_caption
 
         if "headers" in self.options and 0 < len(self.options["headers"]):
             headers = re.split(",\s{0,1}", self.options["headers"] )
@@ -157,19 +156,30 @@ class RowDirective(ObjectDescription):
     def run(self):
         env = self.env
         classes = ["tbl-row"]
+        ids=[]
 
         # todo add odd/even to clases
         if "class" in self.options:
             classes.append(self.options["classes"])
 
+        _module.row_anchor = None
+        
+        if "id" in self.options:
+            _module.row_anchor = f"row-{self.options['id']}"
+            logger.debug(f"storing row anchor row-{_module.row_anchor}")
+
         content_row = nodes.row(classes=classes)
         _module.row_id += 1
 
         if env.config.rst_table_autonumber:
-            node = nodes.entry(classes=classes)
+            if _module.row_anchor is not None:
+                ids.append(_module.row_anchor)
+                _module.row_anchor = None
+            node = nodes.entry(classes=classes, ids=ids)
             node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
             node += node_id
             if "id" in self.options:
+                logger.debug(f"adding row with id {self.options['id']} to domain")
                 tbl = self.env.get_domain("tbl")
                 tbl.add_row(self.options["id"])
 
@@ -197,6 +207,12 @@ class ColumnDirective(ObjectDescription):
 
         logger.debug(f"adding column with content {self.content}")
         self.assert_has_content()
-        node = nodes.entry(classes=classes)
+        ids = []
+        
+        if _module.row_anchor is not None:
+            ids.append(_module.row_anchor)
+            _module.row_anchor = []
+        
+        node = nodes.entry(classes=classes, ids=ids)
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]

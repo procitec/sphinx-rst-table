@@ -43,11 +43,6 @@ Directives
         The given number of widths should be set **with** considering the ``autonumber`` column to give this column
         also an width.
 
-    .. rst:directive:option:: id
-        :type: str
-
-        An additional id the table could be referenced. References by title are also possible.
-
     .. rst:directive:option:: class
         :type: str
 

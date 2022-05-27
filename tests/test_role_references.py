@@ -23,5 +23,9 @@ def test_role_references(test_app):
     assert "Example for a simple table" in html
 
     assert "Could not resolve xref for" not in out.getvalue()
+    
+    assert "undefined label" not in out.getvalue()
 
-    assert "ROW_1" in html
+    assert ' id="row-ROW_1">1.1' in html
+    
+    assert ' id="table-This is a table title"' in html

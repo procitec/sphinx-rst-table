@@ -15,5 +15,3 @@ def test_doc_short_example(test_app):
     assert "Example for a simple table" in html
 
     assert "This is also shown" in html
-
-    assert "First simple table" not in html

@@ -66,6 +66,8 @@ class TblDomain(Domain):
     def get_objects(self):
         for obj in self.data["tables"]:
             yield (obj)
+        for obj in self.data["rows"]:
+            yield (obj)
 
     def resolve_xref(self, env, fromdocname, builder, typ, target, node, contnode):
         match = [(docname, anchor) for name, sig, typ, docname, anchor, prio in self.get_objects() if sig == target]
@@ -81,13 +83,14 @@ class TblDomain(Domain):
 
     def add_table(self, signature, id):
         """Add a new table to the domain."""
-        index_entry = signature if signature is not None else id
+        for _id in [signature, id]:
+            if _id is not None:
+                name = "{}.{}".format("table", _id)
+                anchor = "table-{}".format(_id)
 
-        name = "{}.{}".format("table", index_entry)
-        anchor = "table-{}".format(index_entry)
-
-        # name, dispname, type, docname, anchor, priority
-        self.data["tables"].append((name, index_entry, "Table", self.env.docname, anchor, 0))
+                # name, dispname, type, docname, anchor, priority
+                logger.debug(f"adding referency to tables: {name}, {_id}, {anchor}")
+                self.data["tables"].append((name, _id, "Table", self.env.docname, anchor, 0))
 
     def add_row(self, index_entry):
         """Add a new row to the domain."""
@@ -95,4 +98,5 @@ class TblDomain(Domain):
         anchor = "row-{}".format(index_entry)
 
         # name, dispname, type, docname, anchor, priority
+        logger.debug(f"adding referency to rows: {name}, {index_entry}, {anchor}")
         self.data["rows"].append((name, index_entry, "Row", self.env.docname, anchor, 0))

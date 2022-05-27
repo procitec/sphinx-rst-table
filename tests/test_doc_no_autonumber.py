@@ -16,6 +16,4 @@ def test_doc_no_autonumber(test_app):
 
     assert "multiline column" in html
 
-    assert "First simple table" not in html
-
     assert "1.1" not in html  # from autonumber config value

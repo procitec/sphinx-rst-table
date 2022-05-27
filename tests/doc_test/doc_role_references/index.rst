@@ -2,9 +2,8 @@
 Example for a simple table
 ==========================
 
-.. tbl:tbl:: This is the Table title
+.. tbl:tbl:: This is a table title
     :columns: 2
-    :title:
 
     .. tbl:row::
         :id: ROW_1
@@ -76,6 +75,6 @@ At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergr
 Referenzen
 ==========
 
-This table should be references by :ref:`id1`
+This table should be references by :tbl:tbl:`This is a table title`
 The content should be also referable with :tbl:row:`ROW_1`
 
