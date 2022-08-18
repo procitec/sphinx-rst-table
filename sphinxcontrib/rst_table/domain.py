@@ -5,6 +5,11 @@ from sphinx.roles import XRefRole
 from sphinx.util import logging
 from sphinx.util.nodes import make_refnode
 
+from sphinx.locale import get_translation
+
+MESSAGE_CATALOG_NAME = 'sphinxcontrib.rst_table'
+_ = get_translation(MESSAGE_CATALOG_NAME)
+
 from sphinxcontrib.rst_table.directives import (
     ColumnDirective,
     RowDirective,
@@ -18,8 +23,8 @@ class TableIndex(Index):
     """A custom index that creates an table matrix."""
 
     name = "tbl"
-    localname = "Table Index"
-    shortname = "Table"
+    localname = _('Table Index')
+    shortname = _('Table')
 
     def generate(self, docnames=None):
         content = defaultdict(list)
