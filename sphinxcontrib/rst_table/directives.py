@@ -48,7 +48,7 @@ class TableDirective(ObjectDescription):
         classes = ["tbl"]
 
         if "class" in self.options:
-            classes.append(self.options["classes"])
+            classes.append(self.options["class"])
 
         headers = []
         widths = []
@@ -163,7 +163,7 @@ class RowDirective(ObjectDescription):
             classes.append(self.options["classes"])
 
         _module.row_anchor = None
-        
+
         if "id" in self.options:
             _module.row_anchor = f"row-{self.options['id']}"
             logger.debug(f"storing row anchor row-{_module.row_anchor}")
@@ -208,11 +208,11 @@ class ColumnDirective(ObjectDescription):
         logger.debug(f"adding column with content {self.content}")
         self.assert_has_content()
         ids = []
-        
+
         if _module.row_anchor is not None:
             ids.append(_module.row_anchor)
             _module.row_anchor = []
-        
+
         node = nodes.entry(classes=classes, ids=ids)
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]

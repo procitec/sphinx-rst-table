@@ -78,7 +78,7 @@ class TblDomain(Domain):
 
             return make_refnode(builder, fromdocname, todocname, targ, contnode, targ)
         else:
-            logger.warning(f"Could not resolve xref for {target}")
+            logger.debug(f"Could not resolve xref for {target}")
             return None
 
     def add_table(self, signature, id):
