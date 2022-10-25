@@ -197,9 +197,12 @@ class ColumnDirective(ObjectDescription):
     required_arguments = 0
     option_spec = {
         "class": directives.unchanged,
+        "colspan": int,
+        "rowspan": int,
     }
 
     def run(self):
+        kwargs = {}
         classes = ["tbl-col"]
         # todo add odd/even to clases
         if "class" in self.options:
@@ -209,10 +212,19 @@ class ColumnDirective(ObjectDescription):
         self.assert_has_content()
         ids = []
 
+        kwargs['classes']=classes
+
         if _module.row_anchor is not None:
             ids.append(_module.row_anchor)
             _module.row_anchor = []
+        if "colspan" in self.options:
+            morecols = int(self.options["colspan"]) - 1
+            kwargs['morecols']=morecols
+        if "rowspan" in self.options:
+            morerows = int(self.options["rowspan"]) - 1
+            kwargs['morerows']=morerows
 
-        node = nodes.entry(classes=classes, ids=ids)
+        node = nodes.entry(**kwargs)
+        # node = nodes.entry(classes=classes, ids=ids )
         self.state.nested_parse(self.content, self.content_offset, node)
         return [node]

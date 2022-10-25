@@ -4,7 +4,7 @@ Directives
 ==========
 
 
-.. rst:directive:: :tbl:table
+.. rst:directive:: :tbl:tbl
 
     A table is added to the document with the directive `tbl:tbl`:
 
@@ -13,7 +13,6 @@ Directives
         .. :tbl:tbl: Title of the Table
 
     The title is required (e.g. for references). The options for the directive are:
-
 
     .. rubric:: Options
 
@@ -78,3 +77,13 @@ The directive requires no arguments.
         :type: str
         
         The class name for html output to use in css files. By default 'tbl-row' is added.
+
+    .. rst:directive:option:: colspan
+        :type: int
+
+        Number of columns to span. Same meaning as the html table attribute.
+
+    .. rst:directive:option:: rowspan
+        :type: int
+
+        Number of rows to span. Same meaning as the html table attribute.
