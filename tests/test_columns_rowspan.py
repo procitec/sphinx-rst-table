@@ -22,11 +22,11 @@ def test_columns_rowspan(test_app):
 
     assert "Example for a rowspan table" in html
 
-    assert( "Auto ID") in html
+    assert( '<th class="head"><p>Auto ID</p></th>') in html
 
-    assert( "First Column") in html
+    assert( '<th class="head"><p>First Column</p></th>') in html
 
-    assert( "Second Column") in html
+    assert( '<th class="head"><p>Second Column</p></th>') in html
 
     assert( 'rowspan="2"' ) in html
 

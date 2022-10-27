@@ -115,13 +115,17 @@ class TableDirective(ObjectDescription):
                 header_row += nodes.entry("", nodes.paragraph(text=header))
 
             node_thead = nodes.thead("", header_row)
-
-        node_tbody = nodes.tbody()
-        self.state.nested_parse(self.content, self.content_offset, node_tbody)
-        node_tgroup += node_tbody
-
-        if 0 < len(headers):
             node_tgroup += node_thead
+            nodes_content = nodes.tbody()
+        else:
+            nodes_content = nodes.tbody();
+
+        self.state.nested_parse(self.content, self.content_offset, nodes_content)
+
+        #if 0 < len(headers):
+        #    node_tgroup += node_thead
+
+        node_tgroup += nodes_content
 
         if caption is not None or table_id is not None:
             tbl = self.env.get_domain("tbl")

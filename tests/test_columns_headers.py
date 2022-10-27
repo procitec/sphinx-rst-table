@@ -22,10 +22,10 @@ def test_columns_header(test_app):
 
     assert "Example for a simple table" in html
 
-    assert( "Auto ID") in html
+    assert( '<th class="head"><p>Auto ID</p></th>') in html
 
-    assert( "First Column") in html
+    assert( '<th class="head"><p>First Column</p></th>') in html
 
-    assert( "Second Column") in html
+    assert( '<th class="head"><p>Second Column</p></th>') in html
 
     assert "multiline column" in html
