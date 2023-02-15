@@ -1,6 +1,7 @@
 import os
 
 extensions = ["sphinxcontrib.rst_table"]
+rst_table_autonumber = True
 
 
 test_dir = os.path.dirname(__file__)

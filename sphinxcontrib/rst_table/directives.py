@@ -14,7 +14,12 @@ _module.tables = {}
 _module.rows = {}
 _module.table_id = 0
 _module.row_id = 0
+_module.header_rows=0
 
+_module.node_table = None
+_module.node_thead = None
+_module.node_tgroup = None
+_module.node_tbody = None
 
 class TableDirective(ObjectDescription):
     """A custom directive that describes a table in the tbl domain.
@@ -41,7 +46,12 @@ class TableDirective(ObjectDescription):
         "title": directives.unchanged,
         "columns": directives.unchanged,
         "class": directives.unchanged,
+        "header-rows": int,
     }
+
+    def handle_signature(self, sig, signode):
+        logger.debug(f"handle_signature in table directive {sig}")
+
 
     def run(self):
         env = self.env
@@ -56,6 +66,12 @@ class TableDirective(ObjectDescription):
         table_id = None
         caption = self.arguments[0]
 
+        _module.node_table = None
+        _module.node_thead = None
+        _module.node_tgroup = None
+        _module.node_tbody = None
+
+
         logger.debug(f"got caption {caption}")
         ids = [f"table-{caption}"]
 
@@ -63,16 +79,12 @@ class TableDirective(ObjectDescription):
             table_id = self.options["id"]
             ids.append(f"table-{table_id}")
 
-        node_table = nodes.table(classes=classes, ids=ids)
-
-        if "title" in self.options:
-            node_caption = nodes.title(text=caption)
-            node_table += node_caption
-
         if "headers" in self.options and 0 < len(self.options["headers"]):
             headers = re.split(",\s{0,1}", self.options["headers"] )
             logger.debug(f"found {len(headers)} entries in header")
+            logger.warning(f"use of headers option is deprecated, use :header-rows: instead")
             columns = len(headers)
+
         if "widths" in self.options and 0 < len(self.options["widths"]):
             widths = re.split(",\s{0,1}", self.options["widths"] )
             logger.debug(f"found {len(widths)} entries in widths")
@@ -86,7 +98,19 @@ class TableDirective(ObjectDescription):
                 "could not determine number of columns from header or widths options. 'columns' options must be given"
             )
 
+        if "header-rows" in self.options:
+            _module.header_rows = int(self.options["header-rows"])
+
         logger.debug(f"create table with {columns} columns")
+        # class "colwidths-given" must be set since docutils-0.18.1, otherwise the table will not have
+        # any colgroup definitions.
+        class_colwidth = "colwidths-given" if 0 < len(widths) else "colwidths-auto"
+
+        _module.node_table = nodes.table(classes=classes + [class_colwidth], ids=ids)
+
+        if "title" in self.options:
+            node_caption = nodes.title(text=caption)
+            _module.node_table += node_caption
 
         if env.config.rst_table_autonumber_reset_on_table:
             _module.table_id = 0
@@ -94,43 +118,48 @@ class TableDirective(ObjectDescription):
         _module.row_id = 0
         _module.table_id += 1
 
-        node_tgroup = nodes.tgroup(cols=columns)
-        node_table += node_tgroup
+        _module.node_tgroup = nodes.tgroup(cols=columns)
+        _module.node_table += _module.node_tgroup
 
         # todo match headers and widths length to match together
         if 0 < len(widths):
             for width in widths:
                 logger.debug(f"create colspec with {int(width)} column")
                 node_colspec = nodes.colspec(colwidth=int(width))
-                node_tgroup += node_colspec
+                _module.node_tgroup += node_colspec
         else:
             for i in range(0, columns):
-                logger.debug(f"create colspec with {int(100/columns)} column")
-                node_colspec = nodes.colspec(colwidth=int(100 / columns))
-                node_tgroup += node_colspec
+                #logger.debug(f"create colspec with {int(100/columns)} column")
+                node_colspec = nodes.colspec()
+                _module.node_tgroup += node_colspec
 
         if 0 < len(headers):
             header_row = nodes.row()
             for header in headers:
                 header_row += nodes.entry("", nodes.paragraph(text=header))
 
-            node_thead = nodes.thead("", header_row)
-            node_tgroup += node_thead
-            nodes_content = nodes.tbody()
-        else:
-            nodes_content = nodes.tbody();
+            _module.node_thead = nodes.thead("", header_row)
+
+        if 0 < _module.header_rows:
+            _module.node_thead = nodes.thead("")
+
+
+        _module.node_tbody = nodes.tbody()
+
+        nodes_content = nodes.entry()
 
         self.state.nested_parse(self.content, self.content_offset, nodes_content)
 
-        #if 0 < len(headers):
-        #    node_tgroup += node_thead
+        if _module.node_thead is not None:
+            _module.node_tgroup += _module.node_thead
 
-        node_tgroup += nodes_content
+        _module.node_tgroup += _module.node_tbody
+
 
         if caption is not None or table_id is not None:
             tbl = self.env.get_domain("tbl")
             tbl.add_table(caption, table_id)
-        return [node_table]
+        return [_module.node_table]
 
 
 class RowDirective(ObjectDescription):
@@ -157,9 +186,14 @@ class RowDirective(ObjectDescription):
         "class": directives.unchanged,
     }
 
+    def handle_signature(self, sig, signode):
+        print(f"handle_signature in row directive {sig}")
+
+
     def run(self):
         env = self.env
-        classes = ["tbl-row"]
+        classes =  ["tbl-row"] if 0 >= _module.header_rows else []
+
         ids=[]
 
         # todo add odd/even to clases
@@ -173,26 +207,35 @@ class RowDirective(ObjectDescription):
             logger.debug(f"storing row anchor row-{_module.row_anchor}")
 
         content_row = nodes.row(classes=classes)
-        _module.row_id += 1
 
-        if env.config.rst_table_autonumber:
-            if _module.row_anchor is not None:
-                ids.append(_module.row_anchor)
-                _module.row_anchor = None
-            node = nodes.entry(classes=classes, ids=ids)
-            node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
-            node += node_id
-            if "id" in self.options:
-                logger.debug(f"adding row with id {self.options['id']} to domain")
-                tbl = self.env.get_domain("tbl")
-                tbl.add_row(self.options["id"])
+        if 0 >= _module.header_rows:
 
-            content_row += node
+            _module.row_id += 1
+
+            if env.config.rst_table_autonumber:
+                if _module.row_anchor is not None:
+                    ids.append(_module.row_anchor)
+                    _module.row_anchor = None
+                node = nodes.entry(classes=classes, ids=ids)
+                node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
+                node += node_id
+                if "id" in self.options:
+                    logger.debug(f"adding row with id {self.options['id']} to domain")
+                    tbl = self.env.get_domain("tbl")
+                    tbl.add_row(self.options["id"])
+
+                content_row += node
 
         self.state.nested_parse(self.content, self.content_offset, content_row)
 
-        return [content_row]
+        if 0 < _module.header_rows:
+            _module.header_rows -= 1
+            _module.node_thead += content_row
 
+        else:
+            _module.node_tbody += content_row
+
+        return []
 
 class ColumnDirective(ObjectDescription):
     """A custom directive that describes a column in a table in the tbl domain."""
@@ -207,7 +250,8 @@ class ColumnDirective(ObjectDescription):
 
     def run(self):
         kwargs = {}
-        classes = ["tbl-col"]
+        classes =  ["tbl-col"] if 0 >= _module.header_rows else []
+
         # todo add odd/even to clases
         if "class" in self.options:
             classes.append(self.options["classes"])
