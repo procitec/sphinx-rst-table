@@ -3,7 +3,7 @@
 Roles
 =====
 
-For crossreference tables and table rows, ``sphinxcontrib-rst-table`` supports some roles:
+For crossreference tables and table rows, ``sphinx-rst-table`` supports some roles:
 
 .. rst:role:: tbl
 

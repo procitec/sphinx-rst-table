@@ -5,7 +5,7 @@ Configuration
 
 Add the extension to the extensions lists in conf.py
 
-extensions = ['sphinxcontrib.rst_table']
+extensions = ['sphinx_rst_table']
 
 
 There are also config values that you can set:

@@ -7,10 +7,10 @@ from sphinx.util.nodes import make_refnode
 
 from sphinx.locale import get_translation
 
-MESSAGE_CATALOG_NAME = 'sphinxcontrib.rst_table'
+MESSAGE_CATALOG_NAME = 'sphinx_rst_table'
 _ = get_translation(MESSAGE_CATALOG_NAME)
 
-from sphinxcontrib.rst_table.directives import (
+from sphinx_rst_table.directives import (
     ColumnDirective,
     RowDirective,
     TableDirective,

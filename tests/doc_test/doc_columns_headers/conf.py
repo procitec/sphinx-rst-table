@@ -1,12 +1,12 @@
 import os
 
-extensions = ["sphinxcontrib.rst_table"]
+extensions = ["sphinx_rst_table"]
 rst_table_autonumber = True
 
 test_dir = os.path.dirname(__file__)
 
 # General information about the project.
-project = "sphinxcontrib-rst-table test docs"
+project = "sphinx-rst-table test docs"
 copyright = "2022, team procitec"
 author = "team procitec"
 

@@ -17,7 +17,7 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'sphinxcontrib-rst-table'
+project = 'sphinx-rst-table'
 copyright = '2022, team procitec'
 author = 'team procitec'
 
@@ -58,12 +58,12 @@ html_theme_options = {
     # 'description': "an extension for sphinx",
     'logo_text_align': "center",
     'github_user': 'procitec',
-    'github_repo': 'sphinxcontrib-rst-table',
+    'github_repo': 'sphinx-rst-table',
     'github_banner': True,
     'github_button': True,
     'github_type': 'star',
     'fixed_sidebar': True,
     'extra_nav_links': {
-                        'sphinxcontrib-rst-table@github': "https://github.com/procitec/sphinxcontrib-rst-table",
+                        'sphinx-rst-table@github': "https://github.com/procitec/sphinx-rst-table",
                         }
 }

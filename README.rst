@@ -1,12 +1,12 @@
 
 .. From here shared with index.rst of docs folder. #SHARED_CONTENT
 
-sphinxcontrib-rst-table
+sphinx-rst-table
 =======================
 
 Sphinx extension to create tables with normal Sphin/ReST directives
 
-`sphinxcontrib-rst-table <https://github.com/procitec/sphinxcontrib-rst-table>`_ is a Sphinx extension to generate table output with ReST directives.
+`sphinx-rst-table <https://github.com/procitec/sphinx-rst-table>`_ is a Sphinx extension to generate table output with ReST directives.
 
 These tables are seamlessly integrated in the output of your specific builder, with limitations due to
 the specific builder.
@@ -37,7 +37,7 @@ This was the point we deciced to make an extension for it.
 Introduction
 -------------
 
-``sphinxcontrib-rst-table`` uses normal directives from the ``tbl`` (table) domain to add tables, rows and cells
+``sphinx-rst-table`` uses normal directives from the ``tbl`` (table) domain to add tables, rows and cells
 
     .. code-block:: rst
     
