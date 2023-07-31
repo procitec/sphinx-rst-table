@@ -80,13 +80,13 @@ class TableDirective(ObjectDescription):
             ids.append(f"table-{table_id}")
 
         if "headers" in self.options and 0 < len(self.options["headers"]):
-            headers = re.split(",\s{0,1}", self.options["headers"] )
+            headers = re.split(",\\s{0,1}", self.options["headers"] )
             logger.debug(f"found {len(headers)} entries in header")
             logger.warning(f"use of headers option is deprecated, use :header-rows: instead")
             columns = len(headers)
 
         if "widths" in self.options and 0 < len(self.options["widths"]):
-            widths = re.split(",\s{0,1}", self.options["widths"] )
+            widths = re.split(",\\s{0,1}", self.options["widths"] )
             logger.debug(f"found {len(widths)} entries in widths")
             columns = len(widths)
         if "columns" in self.options:

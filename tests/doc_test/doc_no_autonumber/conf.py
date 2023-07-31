@@ -71,3 +71,5 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
+
+rst_table_autonumber = False

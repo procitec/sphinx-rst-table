@@ -16,4 +16,4 @@ def test_doc_no_autonumber(test_app):
 
     assert "multiline column" in html
 
-    assert "1.1" not in html  # from autonumber config value
+    assert ">1.1</td>" not in html  # from autonumber config value
