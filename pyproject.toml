@@ -9,7 +9,7 @@ authors = ["team procitec <info@procitec.de>"]
 license = "MIT"
 readme = "README.rst"
 repository = "https://github.com/procitec/sphinx-rst-table"
-documentation = ""
+documentation = "https://github.com/procitec/sphinx-rst-table"
 classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
