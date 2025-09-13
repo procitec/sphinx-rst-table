@@ -198,7 +198,7 @@ class RowDirective(ObjectDescription):
 
         # todo add odd/even to clases
         if "class" in self.options:
-            classes.append(self.options["classes"])
+            classes.append(self.options["class"])
 
         _module.row_anchor = None
 
@@ -254,7 +254,7 @@ class ColumnDirective(ObjectDescription):
 
         # todo add odd/even to clases
         if "class" in self.options:
-            classes.append(self.options["classes"])
+            classes.append(self.options["class"])
 
         logger.debug(f"adding column with content {self.content}")
         self.assert_has_content()
