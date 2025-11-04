@@ -7,8 +7,8 @@ For crossreference tables and table rows, ``sphinx-rst-table`` supports some rol
 
 .. rst:role:: tbl
 
-To add a reference to a table, add :code:`:ref:`title``
+To add a reference to a table, add :code:`:tbl:`title``
 
 .. rst:role:: tbl:row
 
-To add a reference to a row, add :code:`:ref:`id``
+To add a reference to a row, add :code:`:tbl:row:`id``
