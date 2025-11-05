@@ -13,7 +13,7 @@ import re
 
 
 @pytest.mark.parametrize(
-    "test_app", [{"buildername": "html", "srcdir": "doc_test/doc_role_references", "warning": out}], indirect=True
+    "test_app", [{"buildername": "html", "srcdir": "doc_test/doc_role_references_autonumber", "warning": out}], indirect=True
 )
 def test_role_references(test_app):
     app = test_app
@@ -26,11 +26,11 @@ def test_role_references(test_app):
 
     assert "undefined label" not in out.getvalue()
 
-    assert ' id="row-ROW_1"><td class="tbl-col"><p>This is a colum' in html
+    assert ' id="row-ROW_1">1.1' in html
     assert 'href="#row-ROW_1"' in html
 
     assert ' id="table-This is a table title"' in html
     assert 'href="#table-This is a table title"' in html
 
-    assert ' id="row-ROW_2">' in html
+    assert ' id="row-ROW_2">1.2' in html
     assert 'href="#row-ROW_2"' in html

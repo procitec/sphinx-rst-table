@@ -211,21 +211,24 @@ class RowDirective(ObjectDescription):
         if 0 >= _module.header_rows:
 
             _module.row_id += 1
+           
+            if _module.row_anchor is not None:
+                ids.append(_module.row_anchor)
+                _module.row_anchor = None
 
             if env.config.rst_table_autonumber:
-                if _module.row_anchor is not None:
-                    ids.append(_module.row_anchor)
-                    _module.row_anchor = None
                 node = nodes.entry(classes=classes, ids=ids)
                 node_id = nodes.Text(f"{_module.table_id}.{_module.row_id}")
                 node += node_id
-                if "id" in self.options:
-                    logger.debug(f"adding row with id {self.options['id']} to domain")
-                    tbl = self.env.get_domain("tbl")
-                    tbl.add_row(self.options["id"])
-
                 content_row += node
+            else:
+                content_row = nodes.row(classes=classes, ids=ids)
 
+            if "id" in self.options:
+                logger.debug(f"adding row with id {self.options['id']} to domain")
+                tbl = self.env.get_domain("tbl")
+                tbl.add_row(self.options["id"])
+            
         self.state.nested_parse(self.content, self.content_offset, content_row)
 
         if 0 < _module.header_rows:
