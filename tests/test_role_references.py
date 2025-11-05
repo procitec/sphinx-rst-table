@@ -27,5 +27,7 @@ def test_role_references(test_app):
     assert "undefined label" not in out.getvalue()
 
     assert ' id="row-ROW_1">1.1' in html
+    assert 'href="#row-ROW_1"' in html
     
     assert ' id="table-This is a table title"' in html
+    assert 'href="#table-This is a table title"' in html
