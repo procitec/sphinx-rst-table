@@ -1,0 +1,84 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag, e.g. v0.0.1 or 0.0.1"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  release:
+    name: Build wheel and create GitHub Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Resolve tag
+        id: release
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            tag="${{ inputs.tag }}"
+          else
+            tag="${{ github.ref_name }}"
+          fi
+          version="${tag#v}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.release.outputs.tag }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: false
+
+      - name: Install dependencies
+        run: uv sync --all-groups
+
+      - name: Check tag matches project version
+        shell: bash
+        run: |
+          project_version="$(python -c 'import tomllib; from pathlib import Path; print(tomllib.load(Path("pyproject.toml").open("rb"))["project"]["version"])')"
+          tag_version="${{ steps.release.outputs.version }}"
+          if [[ "$tag_version" != "$project_version" ]]; then
+            echo "Tag '${{ steps.release.outputs.tag }}' does not match pyproject.toml version '$project_version'."
+            echo "Use tag '$project_version' or 'v$project_version'."
+            exit 1
+          fi
+
+      - name: Lint
+        run: uv run ruff check sphinx_rst_table tests
+
+      - name: Test
+        run: uv run python -m pytest -n auto tests/
+
+      - name: Build wheel
+        run: uv build --wheel
+
+      - name: Create GitHub Release and upload wheel
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ steps.release.outputs.tag }}
+        run: |
+          gh release create "$TAG_NAME" dist/*.whl \
+            --title "$TAG_NAME" \
+            --generate-notes

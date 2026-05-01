@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def test_doc_example(test_app):
     app = test_app
     app.build()
-    html = Path(app.outdir, "index.html").read_text()
+    html = Path(app.outdir, "index.html").read_text(encoding="utf-8")
 
     assert "Example for a simple table" in html
 

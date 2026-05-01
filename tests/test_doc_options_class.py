@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def test_doc_options_class(test_app):
     app = test_app
     app.build()
-    html = Path(app.outdir, "index.html").read_text()
+    html = Path(app.outdir, "index.html").read_text(encoding="utf-8")
 
     assert "table-class" in html
     assert "row-class" in html

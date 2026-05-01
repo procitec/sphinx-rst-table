@@ -1,0 +1,41 @@
+requires = ["tox>=4.22", "tox-uv>=1.35"]
+env_list = [
+  "py311-sphinx74",
+  "py312-sphinx82",
+  "py313-sphinx91",
+  "lint",
+  "docs",
+]
+skip_missing_interpreters = true
+
+[env_run_base]
+runner = "uv-venv-runner"
+package = "uv-editable"
+dependency_groups = ["test"]
+commands = [["python", "-m", "pytest", "-n", "auto", "tests/"]]
+
+[env.py311-sphinx74]
+base_python = "3.11"
+deps = ["sphinx==7.4.7"]
+
+[env.py312-sphinx82]
+base_python = "3.12"
+deps = ["sphinx==8.2.3"]
+
+[env.py313-sphinx91]
+base_python = "3.13"
+deps = ["sphinx==9.1.0"]
+
+[env.lint]
+base_python = "3.12"
+package = "skip"
+dependency_groups = ["lint"]
+commands = [
+  ["ruff", "check", "sphinx_rst_table", "tests"],
+  ["ruff", "format", "--check", "sphinx_rst_table", "tests"],
+]
+
+[env.docs]
+base_python = "3.12"
+dependency_groups = ["docs"]
+commands = [["sphinx-build", "-a", "-E", "-j", "auto", "-b", "html", "docs/", "docs/_build/html"]]

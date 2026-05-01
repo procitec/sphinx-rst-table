@@ -12,7 +12,7 @@ def test_doc_error_columns(test_app):
     app = test_app
     try:
         app.build()
-        html = Path(app.outdir, "index.html").read_text()
+        Path(app.outdir, "index.html").read_text(encoding="utf-8")
         assert False  # this should not be reached
 
     except ExtensionError as e:

@@ -1,24 +1,24 @@
+from io import StringIO
 from pathlib import Path
 
 import pytest
 from sphinx.util import logging
 
 logger = logging.getLogger(__name__)
-from io import StringIO
 
 warnings = ""
 out = StringIO(warnings)
 
-import re
-
 
 @pytest.mark.parametrize(
-    "test_app", [{"buildername": "html", "srcdir": "doc_test/doc_role_references_autonumber", "warning": out}], indirect=True
+    "test_app",
+    [{"buildername": "html", "srcdir": "doc_test/doc_role_references_autonumber", "warning": out}],
+    indirect=True,
 )
 def test_role_references(test_app):
     app = test_app
     app.build()
-    html = Path(app.outdir, "index.html").read_text()
+    html = Path(app.outdir, "index.html").read_text(encoding="utf-8")
 
     assert "Example for a simple table" in html
 

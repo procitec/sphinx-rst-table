@@ -1,61 +1,68 @@
-[tool.poetry]
+[project]
 name = "sphinx-rst-table"
-
-# !! Don't miss updates in setup.py or related files !!!
-version = "0.0.1"
-
-description = "Sphinx rst-table extension for mapping directories and services as document folders"
-authors = ["team procitec <info@procitec.de>"]
-license = "MIT"
+version = "26.1"
+description = "Sphinx extension to create tables with normal Sphinx/ReST directives"
 readme = "README.rst"
-repository = "https://github.com/procitec/sphinx-rst-table"
-documentation = "https://github.com/procitec/sphinx-rst-table"
-classifiers=[
-        'Development Status :: 3 - Alpha',
-        'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Operating System :: OS Independent',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Topic :: Documentation',
-        'Topic :: Utilities',
-        'Framework :: Sphinx :: Extension',
-    ]
-
-packages = [
-    {include = "sphinx_rst_table", from = "."}
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+  { name = "team procitec", email = "info@procitec.de" },
 ]
+keywords = ["sphinx", "documentation", "tables", "restructuredtext"]
 
-[tool.poetry.dependencies]
-python = ">3.6.2,<4.0"
-sphinx = [
-    { version = ">4.0", python = "<=3.9" },
-    { version = ">6.0", python = ">=3.10" },
+[project.urls]
+Repository = "https://github.com/procitec/sphinx-rst-table"
+Documentation = "https://github.com/procitec/sphinx-rst-table/tree/main/docs"
+Issues = "https://github.com/procitec/sphinx-rst-table/issues"
+
+[dependency-groups]
+dev = [
+  { include-group = "test" },
+  { include-group = "lint" },
+  { include-group = "docs" },
 ]
-
-[tool.poetry.dev-dependencies]
-pre-commit = "^2"
-# test dependencies
-pytest = ">6.2.5"
-pytest-xdist="*"  # parallelisation
-
-# formatting dependencies
-black = "^22.3"
-isort = "^5.7.0"
-
-[tool.black]
-line-length = 120
-
-[tool.isort]
-profile = "black"
-
-[tool.poetry.extras]
-docs = ["sphinx"]
+test = [
+  "pytest>=8.0",
+  "pytest-xdist>=3.5",
+  "pyparsing!=3.0.4",
+]
+lint = [
+  "ruff>=0.13",
+]
+docs = [
+  "sphinx>=8.2",
+]
 
 [build-system]
-requires = ["poetry-core @ git+https://github.com/python-poetry/poetry-core.git@main"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.11.8,<0.12"]
+build-backend = "uv_build"
 
+[tool.uv.build-backend]
+module-name = "sphinx_rst_table"
+module-root = ""
+source-include = [
+  "/docs/**",
+  "/tests/**",
+  "/tox.toml",
+  "/Makefile",
+  "/translations.sh",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+  "--tb=long",
+  "--log-level=DEBUG",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+extend-select = ["I"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

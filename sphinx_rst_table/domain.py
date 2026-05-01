@@ -1,20 +1,20 @@
 from collections import defaultdict
 
 from sphinx.domains import Domain, Index
+from sphinx.locale import get_translation
 from sphinx.roles import XRefRole
 from sphinx.util import logging
 from sphinx.util.nodes import make_refnode
-
-from sphinx.locale import get_translation
-
-MESSAGE_CATALOG_NAME = 'sphinx_rst_table'
-_ = get_translation(MESSAGE_CATALOG_NAME)
 
 from sphinx_rst_table.directives import (
     ColumnDirective,
     RowDirective,
     TableDirective,
 )
+
+MESSAGE_CATALOG_NAME = "sphinx_rst_table"
+_ = get_translation(MESSAGE_CATALOG_NAME)
+
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +23,8 @@ class TableIndex(Index):
     """A custom index that creates an table matrix."""
 
     name = "tbl"
-    localname = _('Table Index')
-    shortname = _('Table')
+    localname = _("Table Index")
+    shortname = _("Table")
 
     def generate(self, docnames=None):
         content = defaultdict(list)
@@ -47,7 +47,6 @@ class TableIndex(Index):
 
 
 class TblDomain(Domain):
-
     name = "tbl"
     label = "TBL  Sample"
     roles = {"tbl": XRefRole(), "row": XRefRole()}

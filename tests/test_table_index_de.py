@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 def test_doc_example(test_app):
     app = test_app
     app.build()
-    html = Path(app.outdir, "index.html").read_text()
+    html = Path(app.outdir, "index.html").read_text(encoding="utf-8")
 
     assert "Einfache Tabelle" in html
 
@@ -18,12 +18,12 @@ def test_doc_example(test_app):
 
     assert "1.1" in html  # from autonumber config value
 
-    assert 'title="Stichwortverzeichnis"' in html # to ensure german is set as language
+    assert 'title="Stichwortverzeichnis"' in html  # to ensure german is set as language
 
     assert "tbl-tbl.html" in html
 
     assert "Tabellen Index" in html
 
-    html = Path( app.outdir, "tbl-tbl.html").read_text()
+    html = Path(app.outdir, "tbl-tbl.html").read_text(encoding="utf-8")
 
     assert 'title="Tabellen Index"' in html
